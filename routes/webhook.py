@@ -1,4 +1,9 @@
 from flask import Blueprint, jsonify, request
+from services.intent_service import detect_intent
+from services.dialog_service import get_or_create_session, reset_session, set_mode
+from services.lesson_service import get_theory_response
+from services.progress_service import get_progress_text
+from services.quiz_service import start_quiz, process_answer
 
 webhook_bp = Blueprint("webhook", __name__)
 
@@ -6,21 +11,65 @@ webhook_bp = Blueprint("webhook", __name__)
 @webhook_bp.route("/webhook", methods=["POST"])
 def webhook():
     data = request.get_json(silent=True) or {}
-    user_text = data.get("request", {}).get("original_utterance", "").lower()
 
-    if "привет" in user_text:
-        response_text = "Привет! Я учебный помощник по Python. Могу объяснить тему или провести тест."
-    elif "тест" in user_text:
-        response_text = "Хорошо. Начинаем тест по Python. Первый вопрос скоро будет добавлен."
-    elif "обучение" in user_text or "объясни" in user_text:
-        response_text = "Хорошо. Назови тему по Python, которую хочешь изучить."
+    user_text = data.get("request", {}).get("original_utterance", "")
+    version = data.get("version", "1.0")
+
+    alice_user_id = (
+        data.get("session", {}).get("user_id")
+        or data.get("session", {}).get("application", {}).get("application_id")
+        or "test_user"
+    )
+
+    session = get_or_create_session(alice_user_id)
+
+    if session.waiting_for_answer and session.mode == "quiz":
+        response_text = process_answer(session, alice_user_id, user_text)
     else:
-        response_text = "Я учебный помощник. Скажи: обучение, тест или привет."
+        intent = detect_intent(user_text)
+
+        if intent == "greeting":
+            response_text = (
+                "Привет! Я учебный помощник по Python. "
+                "Могу запустить тест, объяснить тему или показать прогресс."
+            )
+
+        elif intent == "help":
+            response_text = (
+                "Скажите: хочу тест, обучение, объясни переменную, "
+                "объясни цикл for или покажи прогресс."
+            )
+
+        elif intent == "start_test":
+            response_text = start_quiz(session, alice_user_id)
+
+        elif intent == "start_learning":
+            set_mode(session, "learning")
+            response_text = (
+                "Хорошо, начинаем обучение. "
+                "Скажите, какую тему объяснить: переменная, цикл for, функция или список."
+            )
+
+        elif intent == "show_progress":
+            response_text = get_progress_text(alice_user_id)
+
+        elif intent == "exit":
+            reset_session(session)
+            response_text = "Хорошо, текущий режим сброшен. Если захотите продолжить, скажите: привет."
+
+        else:
+            if session.mode == "learning":
+                response_text = get_theory_response(user_text)
+            else:
+                response_text = (
+                    "Я не совсем понял запрос. "
+                    "Скажите: хочу тест, обучение, помощь или прогресс."
+                )
 
     return jsonify({
         "response": {
             "text": response_text,
             "end_session": False
         },
-        "version": data.get("version", "1.0")
+        "version": version
     })
