@@ -7,11 +7,9 @@ from routes import webhook_bp, admin_bp
 login_manager = LoginManager()
 login_manager.login_view = "admin.login"
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
 
 def create_default_admin():
     admin = User.query.filter_by(username="admin").first()
@@ -20,7 +18,6 @@ def create_default_admin():
         db.session.add(admin)
         db.session.commit()
 
-
 def create_demo_data():
     topic = Topic.query.filter_by(title="Python").first()
     if not topic:
@@ -28,17 +25,29 @@ def create_demo_data():
         db.session.add(topic)
         db.session.commit()
 
-    question = Question.query.first()
-    if not question:
-        question = Question(
-            topic_id=topic.id,
-            text="Как в Python называется структура для хранения набора элементов в квадратных скобках?",
-            correct_answer="список",
-            question_type="open"
-        )
-        db.session.add(question)
+    if Question.query.count() == 0:
+        questions = [
+            Question(
+                topic_id=topic.id,
+                text="Как в Python называется структура для хранения набора элементов в квадратных скобках?",
+                correct_answer="список",
+                question_type="open"
+            ),
+            Question(
+                topic_id=topic.id,
+                text="Какая функция используется для вывода текста на экран?",
+                correct_answer="print",
+                question_type="open"
+            ),
+            Question(
+                topic_id=topic.id,
+                text="Какой цикл используется для перебора элементов последовательности?",
+                correct_answer="for",
+                question_type="open"
+            ),
+        ]
+        db.session.add_all(questions)
         db.session.commit()
-
 
 def create_app():
     app = Flask(__name__)
@@ -56,7 +65,6 @@ def create_app():
         create_demo_data()
 
     return app
-
 
 app = create_app()
 

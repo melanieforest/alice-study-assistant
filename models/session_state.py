@@ -1,6 +1,5 @@
 from . import db
 
-
 class SessionState(db.Model):
     __tablename__ = "session_states"
 
@@ -10,6 +9,8 @@ class SessionState(db.Model):
     current_topic = db.Column(db.String(255), nullable=True)
     current_question_id = db.Column(db.Integer, nullable=True)
     waiting_for_answer = db.Column(db.Boolean, default=False)
+    question_index = db.Column(db.Integer, default=0)
+    score = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return f"<SessionState {self.alice_user_id}>"
