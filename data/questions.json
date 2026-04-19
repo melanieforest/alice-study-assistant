@@ -1,0 +1,22 @@
+[
+  {
+    "topic": "Python",
+    "text": "Как в Python называется структура для хранения набора элементов в квадратных скобках?",
+    "correct_answer": "список",
+    "question_type": "open"
+  },
+  {
+    "topic": "Python",
+    "text": "Какой тип цикла используется для перебора элементов последовательности?",
+    "correct_answer": "for",
+    "question_type": "open"
+  },
+  {
+    "topic": "Python",
+    "text": "Какая функция используется для вывода текста на экран?",
+    "correct_answer":
+
+"print",
+    "question_type": "open"
+  }
+]

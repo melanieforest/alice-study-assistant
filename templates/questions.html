@@ -1,10 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}Список вопросов{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Список вопросов</h2>
+
+{% if questions %}
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Текст вопроса</th>
+                <th>Правильный ответ</th>
+                <th>Тип</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for question in questions %}
+            <tr>
+                <td>{{ question.id }}</td>
+                <td>{{ question.text }}</td>
+                <td>{{ question.correct_answer }}</td>
+                <td>{{ question.question_type }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>Вопросов пока нет.</p>
+{% endif %}
+
+<a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary mt-3">Назад</a>
+{% endblock %}

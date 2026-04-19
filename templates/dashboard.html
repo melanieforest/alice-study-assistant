@@ -1,6 +1,22 @@
 {% extends "base.html" %}
 
+{% block title %}Админ-панель{% endblock %}
+
 {% block content %}
-<h1>Админ-панель</h1>
-<p>Ты вошёл как администратор</p>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h1 class="mb-3">Административная панель</h1>
+        <p class="lead">Добро пожаловать, {{ user.username }}.</p>
+
+        <hr>
+
+        <p>Выберите действие:</p>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{{ url_for('admin.questions_list') }}" class="btn btn-primary">Список вопросов</a>
+            <a href="{{ url_for('admin.upload_questions') }}" class="btn btn-secondary">Загрузить JSON</a>
+            <a href="{{ url_for('admin.logout') }}" class="btn btn-outline-danger">Выйти</a>
+        </div>
+    </div>
+</div>
 {% endblock %}
