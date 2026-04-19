@@ -1,21 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Загрузка JSON{% endblock %}
+{% block title %}Загрузка{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Загрузка вопросов из JSON</h2>
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <form method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="json_file" class="form-label">Выберите JSON-файл</label>
-                <input class="form-control" type="file" id="json_file" name="json_file" accept=".json" required>
-            </div>
+<div class="card shadow-sm p-4">
 
-            <button type="submit" class="btn btn-primary">Загрузить</button>
-            <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Назад</a>
-        </form>
-    </div>
+    <h3 class="mb-3">📂 Загрузка вопросов</h3>
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label">Выберите JSON файл</label>
+            <input type="file" name="json_file" class="form-control" required>
+        </div>
+
+        <button class="btn btn-primary">Загрузить</button>
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Назад</a>
+    </form>
+
 </div>
+
 {% endblock %}
