@@ -7,7 +7,7 @@ def detect_intent(user_text: str) -> str:
     if any(word in text for word in ["помощь", "что ты умеешь", "что умеешь", "help"]):
         return "help"
 
-    if any(word in text for word in ["тест", "проверка", "опрос"]):
+    if any(word in text for word in ["тест", "проверка", "опрос", "давай тест", "начать тест"]):
         return "start_test"
 
     if any(word in text for word in ["обучение", "изучение", "теория", "объясни", "объяснение", "урок"]):

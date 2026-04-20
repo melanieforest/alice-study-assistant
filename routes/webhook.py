@@ -6,8 +6,6 @@ from services.progress_service import get_progress_text
 from services.quiz_service import start_quiz, process_answer
 
 webhook_bp = Blueprint("webhook", __name__)
-
-
 @webhook_bp.route("/webhook", methods=["POST"])
 def webhook():
     data = request.get_json(silent=True) or {}
@@ -37,7 +35,7 @@ def webhook():
         elif intent == "help":
             response_text = (
                 "Скажите: хочу тест, обучение, объясни переменную, "
-                "объясни цикл for или покажи прогресс."
+                "объясни цикл for, объясни функцию или покажи прогресс."
             )
 
         elif intent == "start_test":
@@ -47,7 +45,7 @@ def webhook():
             set_mode(session, "learning")
             response_text = (
                 "Хорошо, начинаем обучение. "
-                "Скажите, какую тему объяснить: переменная, цикл for, функция или список."
+                "Скажите, какую тему объяснить: переменная, цикл for, функция, список или if."
             )
 
         elif intent == "show_progress":

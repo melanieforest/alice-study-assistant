@@ -1,13 +1,15 @@
 from models import db, Question, AnswerAttempt
 
+
 def get_all_questions():
     return Question.query.order_by(Question.id.asc()).all()
+
 
 def start_quiz(session, alice_user_id: str) -> str:
     questions = get_all_questions()
 
     if not questions:
-        return "В базе пока нет вопросов для теста."
+        return "В базе пока нет вопросов для теста. Обратитесь к администратору."
 
     first_question = questions[0]
 
@@ -20,6 +22,7 @@ def start_quiz(session, alice_user_id: str) -> str:
 
     return f"Начинаем тест. Вопрос 1: {first_question.text}"
 
+
 def process_answer(session, alice_user_id: str, user_text: str) -> str:
     questions = get_all_questions()
 
@@ -29,7 +32,7 @@ def process_answer(session, alice_user_id: str, user_text: str) -> str:
     if session.current_question_id is None:
         return "Сейчас нет активного вопроса. Скажите: хочу тест."
 
-    current_question =Question.query.get(session.current_question_id)
+    current_question = Question.query.get(session.current_question_id)
     if current_question is None:
         return "Текущий вопрос не найден. Скажите: хочу тест."
 
@@ -53,6 +56,7 @@ def process_answer(session, alice_user_id: str, user_text: str) -> str:
     if next_index >= len(questions):
         total_questions = len(questions)
         final_score = session.score
+
         session.waiting_for_answer = False
         session.current_question_id = None
         session.mode = None
@@ -66,6 +70,7 @@ def process_answer(session, alice_user_id: str, user_text: str) -> str:
                 f"Ваш результат: {final_score} из {total_questions}. "
                 f"Можете сказать: хочу тест, обучение или прогресс."
             )
+
         return (
             f"Неверно. Правильный ответ: {current_question.correct_answer}. "
             f"Тест завершён. Ваш результат: {final_score} из {total_questions}. "

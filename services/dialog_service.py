@@ -1,5 +1,6 @@
 from models import db, SessionState
 
+
 def get_or_create_session(alice_user_id: str) -> SessionState:
     session = SessionState.query.filter_by(alice_user_id=alice_user_id).first()
 
@@ -18,6 +19,7 @@ def get_or_create_session(alice_user_id: str) -> SessionState:
 
     return session
 
+
 def reset_session(session: SessionState) -> None:
     session.mode = None
     session.current_topic = None
@@ -26,6 +28,7 @@ def reset_session(session: SessionState) -> None:
     session.question_index = 0
     session.score = 0
     db.session.commit()
+
 
 def set_mode(session: SessionState, mode: str) -> None:
     session.mode = mode
