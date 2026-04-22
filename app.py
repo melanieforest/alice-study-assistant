@@ -2,18 +2,16 @@ from flask import Flask
 from flask_login import LoginManager
 from config import Config
 from models import db, User
-from routes import webhook_bp, admin_bp
+from routes import webhook_bp, admin_bp, api_bp
 
 login_manager = LoginManager()
 login_manager.login_view = "admin.login"
 login_manager.login_message = "Сначала войдите в систему."
 login_manager.login_message_category = "warning"
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
 
 def create_default_admin():
     admin = User.query.filter_by(username="admin").first()
@@ -26,7 +24,6 @@ def create_default_admin():
         db.session.add(admin)
         db.session.commit()
 
-
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
@@ -36,6 +33,7 @@ def create_app():
 
     app.register_blueprint(webhook_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(api_bp)
 
     @app.route("/")
     def home():
@@ -46,7 +44,6 @@ def create_app():
         create_default_admin()
 
     return app
-
 
 app = create_app()
 

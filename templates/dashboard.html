@@ -3,36 +3,34 @@
 {% block title %}Админ-панель{% endblock %}
 
 {% block content %}
-
 <div class="row g-4">
 
     <div class="col-md-12">
         <div class="card shadow-sm p-4">
-            <h2 class="mb-2">👋 Добро пожаловать, {{ user.username }}</h2>
-            <p class="text-muted">Управляйте учебными материалами системы</p>
+            <h2 class="mb-2">Добро пожаловать, {{ user.username }}</h2>
+            <p class="text-muted">Управление учебными материалами системы</p>
         </div>
     </div>
 
     <div class="col-md-6">
-        <div class="card shadow-sm p-4 text-center">
-            <h4>📋 Вопросы</h4>
-            <p class="text-muted">Просмотр и управление вопросами</p>
-            <a href="{{ url_for('admin.questions_list') }}" class="btn btn-primary">
-                Перейти
-            </a>
-        </div>
+    <div class="card p-4 text-center">
+        <h4 class="mb-2">📚 Вопросы</h4>
+        <p class="text-muted">Просмотр и управление вопросами</p>
+        <a href="{{ url_for('admin.questions_list') }}" class="btn btn-primary">
+            Открыть
+        </a>
     </div>
-
-    <div class="col-md-6">
-        <div class="card shadow-sm p-4 text-center">
-            <h4>📂 Загрузка JSON</h4>
-            <p class="text-muted">Добавление новых вопросов</p>
-            <a href="{{ url_for('admin.upload_questions') }}" class="btn btn-secondary">
-                Загрузить
-            </a>
-        </div>
-    </div>
-
 </div>
 
+<div class="col-md-6">
+    <div class="card p-4 text-center">
+        <h4 class="mb-2">📥 Загрузка</h4>
+        <p class="text-muted">Импорт вопросов из JSON</p>
+        <a href="{{ url_for('admin.upload_questions') }}" class="btn btn-primary">
+            Перейти
+        </a>
+    </div>
+</div>
+
+</div>
 {% endblock %}

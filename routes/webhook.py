@@ -6,6 +6,7 @@ from services.progress_service import get_progress_text
 from services.quiz_service import start_quiz, process_answer
 
 webhook_bp = Blueprint("webhook", __name__)
+
 @webhook_bp.route("/webhook", methods=["POST"])
 def webhook():
     data = request.get_json(silent=True) or {}
@@ -35,7 +36,7 @@ def webhook():
         elif intent == "help":
             response_text = (
                 "Скажите: хочу тест, обучение, объясни переменную, "
-                "объясни цикл for, объясни функцию или покажи прогресс."
+                "объясни цикл for, объясни функцию, объясни список, объясни if или покажи прогресс."
             )
 
         elif intent == "start_test":
@@ -43,10 +44,22 @@ def webhook():
 
         elif intent == "start_learning":
             set_mode(session, "learning")
-            response_text = (
-                "Хорошо, начинаем обучение. "
-                "Скажите, какую тему объяснить: переменная, цикл for, функция, список или if."
+
+            theory_response = get_theory_response(user_text)
+
+            default_learning_text = (
+                "Я могу объяснить темы по Python.\n"
+                "Например: объясни переменную, объясни цикл for, "
+                "объясни функцию, объясни список, объясни if или объясни словарь."
             )
+
+            if theory_response != default_learning_text:
+                response_text = theory_response
+            else:
+                response_text = (
+                    "Хорошо, начинаем обучение.\n"
+                    "Скажите, какую тему объяснить: переменная, цикл for, функция, список, if или словарь."
+                )
 
         elif intent == "show_progress":
             response_text = get_progress_text(alice_user_id)
@@ -64,8 +77,7 @@ def webhook():
                     "Скажите: хочу тест, обучение, помощь или прогресс."
                 )
 
-    return jsonify({
-        "response": {
+    return jsonify({"response": {
             "text": response_text,
             "end_session": False
         },

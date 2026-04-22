@@ -81,10 +81,10 @@ def upload_questions():
             added_count = 0
 
             for item in data:
-                topic_title = item.get("topic", "Python").strip()
-                text = item.get("text", "").strip()
-                correct_answer = item.get("correct_answer", "").strip()
-                question_type = item.get("question_type", "open").strip()
+                topic_title = str(item.get("topic", "Python")).strip()
+                text = str(item.get("text", "")).strip()
+                correct_answer = str(item.get("correct_answer", "")).strip()
+                question_type = str(item.get("question_type", "open")).strip()
                 options = item.get("options")
 
                 if not text or not correct_answer:
@@ -92,23 +92,22 @@ def upload_questions():
 
                 topic = Topic.query.filter_by(title=topic_title).first()
                 if not topic:
-                    topic = Topic(title=topic_title, description=f"Тема {topic_title}")
+                    topic = Topic(
+                        title=topic_title,
+                        description=f"Тема {topic_title}"
+                    )
                     db.session.add(topic)
-
-                db.session.commit()
+                    db.session.commit()
 
                 question = Question(
                     topic_id=topic.id,
                     text=text,
                     correct_answer=correct_answer,
                     question_type=question_type,
-                    options=json.dumps(options, ensure_ascii=False) if options else None
-
-
-)
+                    options=json.dumps(options,ensure_ascii=False) if options else None
+                )
                 db.session.add(question)
                 added_count += 1
-
             db.session.commit()
             flash(f"Успешно загружено вопросов: {added_count}", "success")
             return redirect(url_for("admin.questions_list"))
@@ -118,3 +117,18 @@ def upload_questions():
             return redirect(url_for("admin.upload_questions"))
 
     return render_template("upload.html")
+
+
+@admin_bp.route("/admin/questions/delete/<int:question_id>", methods=["POST"])
+@login_required
+def delete_question(question_id):
+    if not current_user.is_admin:
+        flash("Доступ запрещён.", "danger")
+        return redirect(url_for("admin.login"))
+
+    question = Question.query.get_or_404(question_id)
+    db.session.delete(question)
+    db.session.commit()
+
+    flash("Вопрос успешно удалён.", "success")
+    return redirect(url_for("admin.questions_list"))

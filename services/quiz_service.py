@@ -1,9 +1,7 @@
 from models import db, Question, AnswerAttempt
 
-
 def get_all_questions():
     return Question.query.order_by(Question.id.asc()).all()
-
 
 def start_quiz(session, alice_user_id: str) -> str:
     questions = get_all_questions()
@@ -20,8 +18,11 @@ def start_quiz(session, alice_user_id: str) -> str:
     session.waiting_for_answer = True
     db.session.commit()
 
-    return f"Начинаем тест. Вопрос 1: {first_question.text}"
-
+    return (
+        f"Начинаем тест по Python.\n"
+        f"Всего вопросов: {len(questions)}.\n"
+        f"Вопрос 1: {first_question.text}"
+    )
 
 def process_answer(session, alice_user_id: str, user_text: str) -> str:
     questions = get_all_questions()
@@ -35,9 +36,9 @@ def process_answer(session, alice_user_id: str, user_text: str) -> str:
     current_question = Question.query.get(session.current_question_id)
     if current_question is None:
         return "Текущий вопрос не найден. Скажите: хочу тест."
-
     user_answer = user_text.strip().lower()
     correct_answer = current_question.correct_answer.strip().lower()
+
     is_correct = user_answer == correct_answer
 
     attempt = AnswerAttempt(
@@ -52,7 +53,6 @@ def process_answer(session, alice_user_id: str, user_text: str) -> str:
         session.score += 1
 
     next_index = session.question_index + 1
-
     if next_index >= len(questions):
         total_questions = len(questions)
         final_score = session.score
@@ -66,14 +66,15 @@ def process_answer(session, alice_user_id: str, user_text: str) -> str:
 
         if is_correct:
             return (
-                f"Верно! Тест завершён. "
-                f"Ваш результат: {final_score} из {total_questions}. "
+                f"Верно! Тест завершён.\n"
+                f"Ваш результат: {final_score} из {total_questions}.\n"
                 f"Можете сказать: хочу тест, обучение или прогресс."
             )
 
         return (
-            f"Неверно. Правильный ответ: {current_question.correct_answer}. "
-            f"Тест завершён. Ваш результат: {final_score} из {total_questions}. "
+            f"Неверно. Правильный ответ: {current_question.correct_answer}.\n"
+            f"Тест завершён.\n"
+            f"Ваш результат: {final_score} из {total_questions}.\n"
             f"Можете сказать: хочу тест, обучение или прогресс."
         )
 
@@ -84,9 +85,12 @@ def process_answer(session, alice_user_id: str, user_text: str) -> str:
     db.session.commit()
 
     if is_correct:
-        return f"Верно! Следующий вопрос {next_index + 1}: {next_question.text}"
+        return (
+            f"Верно! 👍\n"
+            f"Следующий вопрос {next_index + 1}: {next_question.text}"
+        )
 
     return (
-        f"Неверно. Правильный ответ: {current_question.correct_answer}. "
+        f"Неверно ❌. Правильный ответ: {current_question.correct_answer}.\n"
         f"Следующий вопрос {next_index + 1}: {next_question.text}"
     )

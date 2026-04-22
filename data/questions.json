@@ -28,5 +28,11 @@
     "text": "Какой оператор используется для условного ветвления?",
     "correct_answer": "if",
     "question_type": "open"
+  },
+  {
+    "topic": "Python",
+    "text": "Как называется изменяемая коллекция пар ключ-значение?",
+    "correct_answer": "словарь",
+    "question_type": "open"
   }
 ]
