@@ -1,31 +1,36 @@
+import random
 from models import db, Question, AnswerAttempt
 
+
 def get_all_questions():
-    return Question.query.order_by(Question.id.asc()).all()
+    return Question.query.all()
+
 
 def start_quiz(session, alice_user_id: str) -> str:
     questions = get_all_questions()
 
     if not questions:
-        return "В базе пока нет вопросов для теста. Обратитесь к администратору."
+        return "Вопросов пока нет."
 
-    first_question = questions[0]
+    random.shuffle(questions)
 
     session.mode = "quiz"
     session.question_index = 0
     session.score = 0
-    session.current_question_id = first_question.id
     session.waiting_for_answer = True
+
+    session._cache = [q.id for q in questions]
+
+    first = questions[0]
+    session.current_question_id = first.id
+
     db.session.commit()
 
-    return (
-        f"Начинаем тест по Python.\n"
-        f"Всего вопросов: {len(questions)}.\n"
-        f"Вопрос 1: {first_question.text}"
-    )
+    return f"🎯 Тест начался!\n\nВопрос 1:\n{first.text}"
+
 
 def process_answer(session, alice_user_id: str, user_text: str) -> str:
-    questions = get_all_questions()
+    questions = Question.query.order_by(Question.id.asc()).all()
 
     if not questions:
         return "Вопросы для теста не найдены."
@@ -34,8 +39,10 @@ def process_answer(session, alice_user_id: str, user_text: str) -> str:
         return "Сейчас нет активного вопроса. Скажите: хочу тест."
 
     current_question = Question.query.get(session.current_question_id)
-    if current_question is None:
-        return "Текущий вопрос не найден. Скажите: хочу тест."
+
+    if not current_question:
+        return "Ошибка: текущий вопрос не найден. Начните тест заново."
+
     user_answer = user_text.strip().lower()
     correct_answer = current_question.correct_answer.strip().lower()
 
@@ -53,44 +60,37 @@ def process_answer(session, alice_user_id: str, user_text: str) -> str:
         session.score += 1
 
     next_index = session.question_index + 1
-    if next_index >= len(questions):
-        total_questions = len(questions)
-        final_score = session.score
 
+    if next_index >= len(questions):
+        final_score = session.score
+        total = len(questions)
+
+        session.mode = None
         session.waiting_for_answer = False
         session.current_question_id = None
-        session.mode = None
         session.question_index = 0
         session.score = 0
+
         db.session.commit()
 
-        if is_correct:
-            return (
-                f"Верно! Тест завершён.\n"
-                f"Ваш результат: {final_score} из {total_questions}.\n"
-                f"Можете сказать: хочу тест, обучение или прогресс."
-            )
-
         return (
-            f"Неверно. Правильный ответ: {current_question.correct_answer}.\n"
-            f"Тест завершён.\n"
-            f"Ваш результат: {final_score} из {total_questions}.\n"
-            f"Можете сказать: хочу тест, обучение или прогресс."
+            f"Тест завершён 🎯\n"
+            f"Результат: {final_score} из {total}\n"
+            f"Скажите: хочу тест, обучение или прогресс."
         )
 
     next_question = questions[next_index]
+
     session.question_index = next_index
     session.current_question_id = next_question.id
     session.waiting_for_answer = True
+
     db.session.commit()
 
     if is_correct:
-        return (
-            f"Верно! 👍\n"
-            f"Следующий вопрос {next_index + 1}: {next_question.text}"
-        )
+        return f"Верно 👍\nСледующий вопрос: {next_question.text}"
 
     return (
-        f"Неверно ❌. Правильный ответ: {current_question.correct_answer}.\n"
-        f"Следующий вопрос {next_index + 1}: {next_question.text}"
+        f"Неверно ❌ Правильный ответ: {current_question.correct_answer}\n"
+        f"Следующий вопрос: {next_question.text}"
     )

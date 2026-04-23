@@ -4,13 +4,13 @@ def detect_intent(user_text: str) -> str:
     if any(word in text for word in ["привет", "здравствуй", "здравствуйте", "добрый день"]):
         return "greeting"
 
-    if any(word in text for word in ["помощь", "что ты умеешь", "что умеешь", "help"]):
+    if any(word in text for word in ["помощь", "что ты умеешь", "help"]):
         return "help"
 
     if any(word in text for word in ["тест", "проверка", "опрос", "давай тест", "начать тест"]):
         return "start_test"
 
-    if any(word in text for word in ["обучение", "изучение", "теория", "объясни", "объяснение", "урок"]):
+    if any(word in text for word in ["обучение", "изучение", "теория", "объясни", "урок"]):
         return "start_learning"
 
     if any(word in text for word in ["прогресс", "результат", "статистика"]):
@@ -18,8 +18,5 @@ def detect_intent(user_text: str) -> str:
 
     if any(word in text for word in ["выход", "стоп", "хватит", "завершить"]):
         return "exit"
-
-    if any(word in text for word in ["цитата", "мотивация", "вдохновение"]):
-        return "quote"
 
     return "unknown"
