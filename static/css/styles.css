@@ -71,3 +71,20 @@ body {
 h2, h3, h4 {
     font-weight: 600;
 }
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+}
+
+footer {
+    margin-top: auto;
+}

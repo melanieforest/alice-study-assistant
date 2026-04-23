@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from models import db, Question, Topic, AnswerAttempt
+from services.quote_service import get_quote
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -82,4 +83,14 @@ def get_progress_api(alice_user_id):
         "total_answers": total,
         "correct_answers": correct,
         "success_percent": percent
+    }), 200
+
+@api_bp.route("/quote", methods=["GET"])
+def quote():
+    result = get_quote()
+
+    return jsonify({
+        "success": True,
+        "data": result,
+        "error": None
     }), 200

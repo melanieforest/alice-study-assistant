@@ -19,4 +19,7 @@ def detect_intent(user_text: str) -> str:
     if any(word in text for word in ["выход", "стоп", "хватит", "завершить"]):
         return "exit"
 
+    if any(word in text for word in ["цитата", "мотивация", "вдохновение"]):
+        return "quote"
+
     return "unknown"

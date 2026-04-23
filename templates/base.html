@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Админка{% endblock %}</title>
@@ -38,6 +39,12 @@
 
     {% block content %}{% endblock %}
 </div>
-
+<footer class="text-center mt-5 mb-3 text-muted">
+    <hr>
+    <p class="mb-1">
+        💡 "{{ quote.text }}"
+    </p>
+    <small>— {{ quote.author }}</small>
+</footer>
 </body>
 </html>

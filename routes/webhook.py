@@ -4,6 +4,7 @@ from services.dialog_service import get_or_create_session, reset_session, set_mo
 from services.lesson_service import get_theory_response
 from services.progress_service import get_progress_text
 from services.quiz_service import start_quiz, process_answer
+from services.quote_service import get_quote
 
 webhook_bp = Blueprint("webhook", __name__)
 
@@ -67,6 +68,10 @@ def webhook():
         elif intent == "exit":
             reset_session(session)
             response_text = "Хорошо, текущий режим сброшен. Если захотите продолжить, скажите: привет."
+
+        elif intent == "quote":
+            quote = get_quote()
+            response_text = f"💡 {quote['text']} — {quote['author']}"
 
         else:
             if session.mode == "learning":
